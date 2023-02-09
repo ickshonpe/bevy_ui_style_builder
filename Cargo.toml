@@ -6,7 +6,7 @@ keywords = ["bevy", "ui", "games"]
 categories = ["game-development", "graphics", "gui"]
 repository = "https://github.com/ickshonpe/bevy_ui_style_builder"
 readme = "README.md"
-description = "Bevy UI helper extension traits for setting style properties"
+description = "Experimental Bevy UI helper extension methods."
 
 [dependencies.bevy]
 version = "0.9.1"

@@ -10,7 +10,7 @@ pub mod prelude {
     pub use crate::style;
     pub use crate::Breadth;
     pub use crate::StyleBuilderExt;
-    pub use crate::NodeBundleBuilderExt;
+    pub use crate::NodeColorExt;
     pub use crate::NumRect;
 }
 
@@ -300,7 +300,7 @@ impl From<UiRect> for Either<Val, UiRect> {
     }
 }
 
-pub trait StyleWriterExt: Sized {
+pub trait StyleBuilderExt: Sized {
     fn style(self, s: impl FnOnce(&mut Style)) -> Self;
 
     /// Set the left displacement of the node.
@@ -372,48 +372,58 @@ pub trait StyleWriterExt: Sized {
     fn absolute(self) -> Self {
         self.style(|style| { style.position_type = PositionType::Absolute; })
     }
-    
+
     /// Set the position type to relative.
     fn relative(self) -> Self {
         self.style(|style| { style.position_type = PositionType::Relative; })
     }
     
+    /// Set flex-basis.
     fn basis(self, basis: Val) -> Self {
         self.style(|style| { style.flex_basis = basis; })
     }
     
+    /// Set flex-grow.
     fn grow(self, growth: f32) -> Self {
         self.style(|style| { style.flex_grow = growth; })
     }
     
+    /// Set flex-shrink.
     fn shrink(self, shrink: f32) -> Self {
         self.style(|style| { style.flex_shrink = shrink; })
     }
 
+    /// Set the minimum width of the node.
     fn min_width(self, min_width: Val) -> Self {
         self.style(|style| { style.min_size.width = min_width; })
     }
     
+    /// Set the width of the node.
     fn width(self, width: Val) -> Self {
         self.style(|style| { style.size.width = width; })
     }
     
+    /// Set the maximum width of the node.
     fn max_width(self, max_width: Val) -> Self {
         self.style(|style| { style.max_size.width = max_width; })
     }
 
+    /// Set the minimum height of the node.
     fn min_height(self, min_height: Val) -> Self {
         self.style(|style| { style.min_size.height = min_height; })
     }
 
+    /// Set the height of the node.
     fn height(self, height: Val) -> Self {
         self.style(|style| { style.size.height = height; })
     }
 
+    /// Set the maximum height of the node.
     fn max_height(self, max_height: Val) -> Self {
         self.style(|style| { style.max_size.height = max_height; })
     }
 
+    /// Set margins for the node.
     fn margin(self, margin: impl Into<Either<Val, UiRect>>) -> Self {
         self.style(|style| { style.margin = match margin.into() {
             Either::Left(val) => UiRect::all(val),
@@ -421,6 +431,7 @@ pub trait StyleWriterExt: Sized {
         }; })
     }
 
+    /// Set border thickness for the node.
     fn border(self, border: impl Into<Either<Breadth, NumRect>>) -> Self {
         self.style(|style| { style.border = match border.into() {
             Either::Left(breadth) => NumRect::all(breadth),
@@ -428,6 +439,7 @@ pub trait StyleWriterExt: Sized {
         }.into(); })
     }
 
+    /// Set padding for the node.
     fn padding(self, padding: impl Into<Either<Breadth, NumRect>>) -> Self {
         self.style(|style| { style.padding = match padding.into() {
             Either::Left(breadth) => NumRect::all(breadth),
@@ -435,796 +447,143 @@ pub trait StyleWriterExt: Sized {
         }.into(); })
     }
 
+    /// Clip overflow.
     fn hide_overflow(self) -> Self {
         self.style(|style| { style.overflow = Overflow::Hidden; })
     }
 
+    /// Show overflow.
     fn show_overflow(self) -> Self {
         self.style(|style| { style.overflow = Overflow::Visible; })
     }
 
+    /// The minimum size of the node.
+    /// `min_size` overrides the `size` and `max_size` properties.
     fn min_size(self, size: Size) -> Self {
         self.style(|style| { style.min_size = size; })
     }
 
+    /// The size of the node.
     fn size(self, size: Size) -> Self {
         self.style(|style| { style.size = size; })
     }
 
+    /// The maximum size of the node.
     fn max_size(self, size: Size) -> Self {
         self.style(|style| { style.max_size = size; })
     }
 
+    /// How this item is aligned according to the cross axis
     fn align_self(self, align: AlignSelf) -> Self {
         self.style(|style| { style.align_self = align; })
     }
 
+    /// How child nodes are aligned according to the cross axis
     fn align_items(self, align: AlignItems) -> Self {
         self.style(|style| { style.align_items = align; })
     }
 
+    /// Defines how wrapped lines are aligned within the flexbox.
     fn align_content(self, align: AlignContent) -> Self {
         self.style(|style| { style.align_content = align; })
     }
 
+    /// How child nodes are aligned according to the main axis
     fn justify_content(self, justify: JustifyContent) -> Self {
         self.style(|style| { style.justify_content = justify; })
     }
-}
 
-pub trait StyleBuilderExt {
-    /// Set the left displacement of the node.
-    fn left(self, value: Val) -> Self;
-    
-    /// Set the right displacement of the node.
-    fn right(self, value: Val) -> Self;
-    
-    /// Set the top displacement of the node.
-    fn top(self, value: Val) -> Self;
-    
-    /// Set the bottom displacement of the node.
-    fn bottom(self, value: Val) -> Self;
-    
-    /// Display this node and its children.
-    fn display(self) -> Self;
-    
-    /// Hide this node and its children.
-    fn disable(self) -> Self;
+    fn align_center(self) -> Self {
+        self.style(|style| { style.align_items = AlignItems::Center; })
+    }
 
-    /// Set the flex-direction to row.
-    fn row(self) -> Self;
+    fn align_start(self) -> Self {
+        self.style(|style| { style.align_items = AlignItems::FlexStart; })
+    }
 
-    /// Set the flex-direction to column.
-    fn column(self) -> Self;
-    
-    /// Set the flex-direction to row reverse.
-    fn row_reverse(self) -> Self;
-    
-    /// Set the flex-direction to column reverse.
-    fn column_reverse(self) -> Self;
-    
-    /// Set the flex-wrap to wrap.
-    fn wrap(self) -> Self;
-    
-    /// Set the flex-wrap to wrap reverse.
-    fn wrap_reverse(self) -> Self;
-    
-    /// Set the position type to absolute.
-    fn absolute(self) -> Self;
-    
-    /// Set the position type to relative.
-    fn relative(self) -> Self;
-    
-    /// Set flex-grow.
-    fn grow(self, growth: f32) -> Self;
-    
-    /// Set flex-shrink.
-    fn shrink(self, shrink: f32) -> Self;
-    
-    /// Set flex-basis.
-    fn basis(self, basis: Val) -> Self;
-    
-    /// Set the minimum width of the node.
-    fn min_width(self, min_width: Val) -> Self;
-    
-    /// Set the width of the node.
-    fn width(self, width: Val) -> Self;
-    
-    /// Set the maximum width of the node.
-    fn max_width(self, max_width: Val) -> Self;
-    
-    /// Set the minimum height of the node.
-    fn min_height(self, min_height: Val) -> Self;    
+    fn align_end(self) -> Self {
+        self.style(|style| { style.align_items = AlignItems::FlexEnd; })
+    }
 
-    /// Set the height of the node.
-    fn height(self, height: Val) -> Self;    
-    
-    /// Set the maximum height of the node.
-    fn max_height(self, max_height: Val) -> Self;
-    
-    /// Set the margin of the node.
-    fn margin(self, margin: impl Into<Either<Val, UiRect>>) -> Self;
-    
-    /// Set the thickness of the node's border.
-    fn border(self, border: impl Into<Either<Breadth, NumRect>>) -> Self;
-    
-    /// Set the padding of the node.
-    fn padding(self, padding: impl Into<Either<Breadth, NumRect>>) -> Self;
-    
-    /// Clip any overflow.
-    fn hide_overflow(self) -> Self;
-    
-    /// Show any overflow.
-    fn show_overflow(self) -> Self;
-    
-    /// The minimum size of the node.
-    /// `min_size` overrides the `size` and `max_size` properties.
-    fn min_size(self, size: Size) -> Self;
-    
-    /// The ideal size of the node.
-    fn size(self, size: Size) -> Self;
-    
-    /// The maximum size of the node.
-    /// `max_size overrides `size` and is overriden by `min_size`.
-    fn max_size(self, size: Size) -> Self;
+    fn align_stretch(self) -> Self {
+        self.style(|style| { style.align_items = AlignItems::Stretch; })
+    }
 
-    /// How this item is aligned according to the cross axis
-    fn align_self(self, align: AlignSelf) -> Self;
+    fn align_baseline(self) -> Self {
+        self.style(|style| { style.align_items = AlignItems::Baseline; })
+    }
 
-    /// How items are aligned according to the cross axis
-    fn align_items(self, align: AlignItems) -> Self;
+    fn justify_center(self) -> Self {
+        self.style(|style| { style.justify_content = JustifyContent::Center; })
+    }
 
-    /// When wrapping is enabled, defines how each line is aligned within the flexbox.
-    fn align_content(self, align: AlignContent) -> Self;
+    fn justify_start(self) -> Self {
+        self.style(|style| { style.justify_content = JustifyContent::FlexStart; })
+    }
 
-    // How items are aligned along the main axis.
-    fn justify_content(self, justify: JustifyContent) -> Self;    
-}
+    fn justify_end(self) -> Self {
+        self.style(|style| { style.justify_content = JustifyContent::FlexEnd; })
+    }
 
-pub trait NodeBuilder {
-    fn make_node(self) -> NodeBundle;
-}
+    fn justify_space_between(self) -> Self {
+        self.style(|style| { style.justify_content = JustifyContent::SpaceBetween; })
+    }
 
-impl NodeBuilder for Style {
-    fn make_node(self) -> NodeBundle {
-        NodeBundle {
-            style: self,
-            ..Default::default()
-        }
+    fn justify_space_around(self) -> Self {
+        self.style(|style| { style.justify_content = JustifyContent::SpaceAround; })
+    }
+
+    fn justify_space_evenly(self) -> Self {
+        self.style(|style| { style.justify_content = JustifyContent::SpaceEvenly; })
     }
 }
 
-pub trait NodeBundleBuilderExt {
-    fn from_style(style: Style) -> Self;
-    fn color(self, color: Color) -> Self;
-    fn style(self, s: impl FnOnce(&mut Style) -> &mut Style) -> Self;
-}
 
-impl NodeBundleBuilderExt for NodeBundle {
-    fn from_style(style: Style) -> Self {
-        NodeBundle {
-            style,
-            ..Default::default()
-        }
-    }
-
-    fn color(mut self, color: Color) -> Self {
-        self.background_color = color.into();
-        self
-    }
-
-    fn style(mut self, s: impl FnOnce(&mut Style) -> &mut Style) -> Self {
+impl StyleBuilderExt for NodeBundle {
+    fn style(mut self, s: impl FnOnce(&mut Style)) -> Self {
         s(&mut self.style);
         self
     }
+}
 
-    
+impl StyleBuilderExt for TextBundle {
+    fn style(mut self, s: impl FnOnce(&mut Style)) -> Self {
+        s(&mut self.style);
+        self
+    }
+}
+
+impl StyleBuilderExt for ImageBundle {
+    fn style(mut self, s: impl FnOnce(&mut Style)) -> Self {
+        s(&mut self.style);
+        self
+    }
 }
 
 impl StyleBuilderExt for Style {
-    /// Set left displacement of the node.
-    fn left(mut self, value: Val) -> Self {
-        self.position.left = value;
-        self
-    }
-
-    /// Set right displacement of the node.
-    fn right(mut self, value: Val) -> Self {
-        self.position.right = value;
-        self
-    }
-
-    /// Set top displacement of the node.
-    fn top(mut self, value: Val) -> Self {
-        self.position.top = value;
-        self
-    }
-
-    /// Set bottom displacement of the node.
-    fn bottom(mut self, value: Val) -> Self {
-        self.position.bottom = value;
-        self
-    }
-
-    
-    fn display(mut self) -> Self {
-        self.display = Display::Flex;
-        self
-    }
-
-    fn disable(mut self) -> Self {
-        self.display = Display::None;
-        self
-    }
-
-    /// Set the flex-direction to row.
-    fn row(mut self) -> Self {
-        self.flex_direction = FlexDirection::Row;
-        self
-    }
-
-    /// Set the flex-direction to column.
-    fn column(mut self) -> Self {
-        self.flex_direction = FlexDirection::Column;
-        self
-    }
-
-    /// Set the flex-direction to row-reverse.
-    fn row_reverse(mut self) -> Self {
-        self.flex_direction = FlexDirection::RowReverse;
-        self
-    }
-
-    /// Set the flex-direction to column-reverse.
-    fn column_reverse(mut self) -> Self {
-        self.flex_direction = FlexDirection::ColumnReverse;
-        self
-    }
-
-    fn wrap(mut self) -> Self {
-        self.flex_wrap = FlexWrap::Wrap;
-        self
-    }
-
-    fn wrap_reverse(mut self) -> Self {
-        self.flex_wrap = FlexWrap::WrapReverse;
-        self
-    }
-
-    fn absolute(mut self) -> Self {
-        self.position_type = PositionType::Absolute;
-        self
-    }
-
-    fn relative(mut self) -> Self {
-        self.position_type = PositionType::Relative;
-        self
-    }
-
-    fn grow(mut self, growth: f32) -> Self {
-        self.flex_grow = growth;
-        self
-    }
-
-    fn shrink(mut self, shrink: f32) -> Self {
-        self.flex_shrink = shrink;
-        self
-    }
-
-    fn basis(mut self, basis: Val) -> Self {
-        self.flex_basis = basis;
-        self
-    }
-
-    fn min_width(mut self, min_width: Val) -> Self {
-        self.min_size.width = min_width;
-        self
-    }
-
-    fn width(mut self, width: Val) -> Self {
-        self.size.width = width;
-        self
-    }
-
-    fn max_width(mut self, max_width: Val) -> Self {
-        self.max_size.width = max_width;
-        self
-    }
-
-    fn min_height(mut self, min_height: Val) -> Self {
-        self.min_size.height = min_height;
-        self
-    }
-
-    fn height(mut self, height: Val) -> Self {
-        self.size.height = height;
-        self
-    }
-
-    fn max_height(mut self, max_height: Val) -> Self {
-        self.max_size.height = max_height;
-        self
-    }
-
-    fn margin(mut self, margin: impl Into<Either<Val, UiRect>>) -> Self {
-        match margin.into() {
-            Either::Left(value) => {
-                self.margin = UiRect::all(value);
-            }
-            Either::Right(rect) => {
-                self.margin = rect;
-            }
-        }
-        self
-    }
-
-    fn border(mut self, border: impl Into<Either<Breadth, NumRect>>) -> Self {
-        self.border = match border.into() {
-                Either::Left(value) => NumRect::all(value),                
-                Either::Right(rect) => rect,
-            }.into();
-        self
-    }
-
-    fn padding(mut self, padding: impl Into<Either<Breadth, NumRect>>) -> Self {
-        self.padding =  match padding.into() {
-            Either::Left(value) => NumRect::all(value),                
-            Either::Right(rect) => rect,
-        }.into();
-        self
-    }
-
-    fn hide_overflow(mut self) -> Self {
-        self.overflow = Overflow::Hidden;
-        self
-    }
-
-    fn show_overflow(mut self) -> Self {
-        self.overflow = Overflow::Visible;
-        self
-    }
-
-    fn min_size(mut self, size: Size) -> Self {
-        self.min_size = size;
-        self
-    }
-
-    fn size(mut self, size: Size) -> Self {
-        self.size = size;
-        self
-    }
-
-    fn max_size(mut self, size: Size) -> Self {
-        self.max_size = size;
-        self
-    }
-
-    fn align_self(mut self, align: AlignSelf) -> Self {
-        self.align_self = align;
-        self
-    }
-
-    fn align_items(mut self, align: AlignItems) -> Self {
-        self.align_items = align;
-        self
-    }
-
-    fn align_content(mut self, align: AlignContent) -> Self {
-        self.align_content = align;
-        self
-    }
-
-    fn justify_content(mut self, justify: JustifyContent) -> Self {
-        self.justify_content = justify;
+    fn style(mut self, s: impl FnOnce(&mut Style)) -> Self {
+        s(&mut self);
         self
     }
 }
 
 impl StyleBuilderExt for &mut Style {
-    
-    fn left(self, value: Val) -> Self {
-        self.position.left = value;
-        self
-    }
-
-    /// Set right displacement of the node.
-    fn right(self, value: Val) -> Self {
-        self.position.right = value;
-        self
-    }
-
-    /// Set top displacement of the node.
-    fn top(self, value: Val) -> Self {
-        self.position.top = value;
-        self
-    }
-
-    /// Set bottom displacement of the node.
-    fn bottom(self, value: Val) -> Self {
-        self.position.bottom = value;
-        self
-    }
-
-    /// Display this node and its children.
-    fn display(self) -> Self {
-        self.display = Display::Flex;
-        self
-    }
-
-    /// Hide this node and its children.
-    fn disable(self) -> Self {
-        self.display = Display::None;
-        self
-    }
-
-    /// Set the flex-direction to row.
-    fn row(self) -> Self {
-        self.flex_direction = FlexDirection::Row;
-        self
-    }
-
-    /// Set the flex-direction to column.
-    fn column(self) -> Self {
-        self.flex_direction = FlexDirection::Column;
-        self
-    }
-
-    /// Set the flex-direction to row reverse.
-    fn row_reverse(self) -> Self {
-        self.flex_direction = FlexDirection::RowReverse;
-        self
-    }
-
-    /// Set the flex-direction to column reverse.
-    fn column_reverse(self) -> Self {
-        self.flex_direction = FlexDirection::ColumnReverse;
-        self
-    }
-
-    /// set flex wrap to wrap
-    fn wrap(self) -> Self {
-        self.flex_wrap = FlexWrap::Wrap;
-        self
-    }
-
-    /// Set flex wrap to wrap reverse
-    fn wrap_reverse(self) -> Self {
-        self.flex_wrap = FlexWrap::WrapReverse;
-        self
-    }
-
-    /// Use absolute positioning.
-    fn absolute(self) -> Self {
-        self.position_type = PositionType::Absolute;
-        self
-    }
-
-    /// Use relative positioning.
-    fn relative(self) -> Self {
-        self.position_type = PositionType::Relative;
-        self
-    }
-
-    /// Set flex-grow.
-    fn grow(self, growth: f32) -> Self {
-        self.flex_grow = growth;
-        self
-    }
-
-    /// Set flex-shrink.
-    fn shrink(self, shrink: f32) -> Self {
-        self.flex_shrink = shrink;
-        self
-    }
-
-    /// Set flex-basis.
-    fn basis(self, basis: Val) -> Self {
-        self.flex_basis = basis;
-        self
-    }
-
-    /// Set the minimum width of the node.
-    fn min_width(self, min_width: Val) -> Self {
-        self.min_size.width = min_width;
-        self
-    }
-
-    /// Set the width of the node.
-    fn width(self, width: Val) -> Self {
-        self.size.width = width;
-        self
-    }
-
-    /// Set the maximum width of the node.
-    fn max_width(self, max_width: Val) -> Self {
-        self.max_size.width = max_width;
-        self
-    }
-
-    /// Set the minimum height of the node.
-    fn min_height(self, min_height: Val) -> Self {
-        self.min_size.height = min_height;
-        self
-    }
-
-    /// Set the height of the node.
-    fn height(self, height: Val) -> Self {
-        self.size.height = height;
-        self
-    }
-
-    /// Set the maximum height of the node.
-    fn max_height(self, max_height: Val) -> Self {
-        self.max_size.height = max_height;
-        self
-    }
-
-    /// Set the margin of the node.
-    fn margin(self, margin: impl Into<Either<Val, UiRect>>) -> Self {
-        match margin.into() {
-            Either::Left(value) => {
-                self.margin = UiRect::all(value);
-            }
-            Either::Right(rect) => {
-                self.margin = rect;
-            }
-        }
-        self
-    }
-
-    /// Set the thickness of the node's border.
-    fn border(self, border: impl Into<Either<Breadth, NumRect>>) -> Self {
-        self.border = match border.into() {
-                Either::Left(value) => NumRect::all(value),                
-                Either::Right(rect) => rect,
-            }.into();
-        self
-    }
-
-    /// Set the padding of the node.
-    fn padding(self, padding: impl Into<Either<Breadth, NumRect>>) -> Self {
-        self.padding =  match padding.into() {
-            Either::Left(value) => NumRect::all(value),                
-            Either::Right(rect) => rect,
-        }.into();
-        self
-    }
-
-    /// Clip any overflow.
-    fn hide_overflow(self) -> Self {
-        self.overflow = Overflow::Hidden;
-        self
-    }
-
-    /// Show any overflow.
-    fn show_overflow(self) -> Self {
-        self.overflow = Overflow::Visible;
-        self
-    }
-
-    /// The minimum size of the node.
-    /// `min_size` overrides the `size` and `max_size` properties.
-    fn min_size(self, size: Size) -> Self {
-        self.min_size = size;
-        self
-    }
-
-    /// The ideal size of the node.
-    fn size(self, size: Size) -> Self {
-        self.size = size;
-        self
-    }
-
-    /// The maximum size of the node.
-    /// `max_size overrides `size` and is overriden by `min_size`.
-    fn max_size(self, size: Size) -> Self {
-        self.max_size = size;
-        self
-    }
-
-    /// How this item is aligned according to the cross axis
-    fn align_self(self, align: AlignSelf) -> Self {
-        self.align_self = align;
-        self
-    }
-
-    /// How items are aligned according to the cross axis
-    fn align_items(self, align: AlignItems) -> Self {
-        self.align_items = align;
-        self
-    }
-
-    /// When wrapping is enabled, defines how each line is aligned within the flexbox.
-    fn align_content(self, align: AlignContent) -> Self {
-        self.align_content = align;
-        self
-    }
-
-    // How items are aligned along the main axis.
-    fn justify_content(self, justify: JustifyContent) -> Self {
-        self.justify_content = justify;
+    fn style(self, s: impl FnOnce(&mut Style)) -> Self {
+        s(self);
         self
     }
 }
 
-impl StyleBuilderExt for NodeBundle {
-    fn left(self, left: Val) -> Self {
-        self.style(|style| style.left(left))
-    }
+pub trait NodeColorExt {
+    fn background_color(self, color: Color) -> Self;
+}
 
-    fn right(mut self, right: Val) -> Self {
-        (&mut self.style).right(right);
-        self
-    }
-
-    fn top(mut self, top: Val) -> Self {
-        (&mut self.style).top(top);
-        self
-    }
-
-    fn bottom(mut self, bottom: Val) -> Self {
-        (&mut self.style).bottom(bottom);
-        self
-    }
-
-    fn display(mut self) -> Self {
-        (&mut self.style).display();
-        self
-    }
-
-    fn disable(mut self) -> Self {
-        (&mut self.style).disable();
-        self
-    }
-
-    fn row(mut self) -> Self {
-        (&mut self.style).row();
-        self
-    }
-
-    fn column(mut self) -> Self {
-        (&mut self.style).column();
-        self
-    }
-
-    fn row_reverse(mut self) -> Self {
-        (&mut self.style).row_reverse();
-        self
-    }
-
-    fn column_reverse(mut self) -> Self {
-        (&mut self.style).column_reverse();
-        self
-    }
-
-    fn wrap(mut self) -> Self {
-        (&mut self.style).wrap();
-        self
-    }
-
-    fn wrap_reverse(mut self) -> Self {
-        (&mut self.style).wrap_reverse();
-        self
-    }
-
-    fn min_width(mut self, min_width: Val) -> Self {
-        (&mut self.style).min_width(min_width);
-        self
-    }
-
-    fn absolute(mut self) -> Self {
-        (&mut self.style).absolute();
-        self
-    }
-
-    fn relative(mut self) -> Self {
-        (&mut self.style).relative();
-        self
-    }
-
-    fn basis(mut self, basis: Val) -> Self {
-        (&mut self.style).basis(basis);
-        self
-    }
-
-    fn grow(mut self, growth: f32) -> Self {
-        (&mut self.style).grow(growth);
-        self
-    }
-
-    fn shrink(mut self, shrink: f32) -> Self {
-        (&mut self.style).shrink(shrink);
-        self
-    }
-
-    fn width(mut self, width: Val) -> Self {
-        (&mut self.style).width(width);
-        self
-    }
-
-    fn max_width(mut self, max_width: Val) -> Self {
-        (&mut self.style).max_width(max_width);
-        self
-    }
-
-    fn min_height(mut self, min_height: Val) -> Self {
-        (&mut self.style).min_height(min_height);
-        self
-    }
-
-    fn height(mut self, height: Val) -> Self {
-        (&mut self.style).height(height);
-        self
-    }
-
-    fn max_height(mut self, max_height: Val) -> Self {
-        (&mut self.style).max_height(max_height);
-        self
-    }
-
-    fn margin(mut self, margin: impl Into<Either<Val, UiRect>>) -> Self {
-        (&mut self.style).margin(margin);
-        self
-    }
-
-    fn border(mut self, border: impl Into<Either<Breadth, NumRect>>) -> Self {
-        (&mut self.style).border(border);
-        self
-    }
-
-    fn padding(mut self, padding: impl Into<Either<Breadth, NumRect>>) -> Self {
-        (&mut self.style).padding(padding);
-        self
-    }
-
-    fn hide_overflow(mut self) -> Self {
-        (&mut self.style).hide_overflow();
-        self
-    }
-
-    fn show_overflow(mut self) -> Self {
-        (&mut self.style).show_overflow();
-        self
-    }
-
-    fn min_size(mut self, size: Size) -> Self {
-        (&mut self.style).min_size(size);
-        self
-    }
-
-    fn size(mut self, size: Size) -> Self {
-        (&mut self.style).size(size);
-        self
-    }
-
-    fn max_size(mut self, size: Size) -> Self {
-        (&mut self.style).max_size(size);
-        self
-    }
-
-    fn align_self(mut self, align: AlignSelf) -> Self {
-        (&mut self.style).align_self(align);
-        self
-    }
-
-    fn align_items(mut self, align: AlignItems) -> Self {
-        (&mut self.style).align_items(align);
-        self
-    }
-
-    fn align_content(mut self, align: AlignContent) -> Self {
-        (&mut self.style).align_content(align);
-        self
-    }
-
-    fn justify_content(mut self, justify: JustifyContent) -> Self {
-        (&mut self.style).justify_content(justify);
+impl NodeColorExt for NodeBundle {
+    fn background_color(mut self, color: Color) -> Self {
+        self.background_color = color.into();
         self
     }
 }
-
-
-
 
 #[cfg(test)]
 mod tests {

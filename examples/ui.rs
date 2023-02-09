@@ -28,7 +28,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             node()
             .width(Val::Percent(100.))
             .height(Val::Percent(100.))
-            .justify_content(JustifyContent::SpaceBetween)
+            .justify_space_between()
         )
         .with_children(|parent| {
             // left vertical fill (border)
@@ -38,7 +38,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     .width(Val::Px(200.))
                     .height(Val::Percent(100.))
                     .border(Breadth::Px(2.))
-                    .color(Color::rgb(0.65, 0.65, 0.65))
+                    .background_color(Color::rgb(0.65, 0.65, 0.65))
                 )
                 .with_children(|parent| {
                     // left vertical fill (content)
@@ -47,7 +47,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             node()
                             .width(Val::Px(196.))
                             .height(Val::Percent(100.))
-                            .color(Color::rgb(0.15, 0.15, 0.15))
+                            .background_color(Color::rgb(0.15, 0.15, 0.15))
                         )
                         .with_children(|parent| {
                             // text
@@ -69,9 +69,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .spawn(
                     node()
                     .column()
-                    .justify_content(JustifyContent::Center)
+                    .justify_center()
+                    .align_center()
                     .size(Size::new(Val::Px(200.0), Val::Percent(100.0)))
-                    .color(Color::rgb(0.15, 0.15, 0.15))
+                    .background_color(Color::rgb(0.15, 0.15, 0.15))
                 )
                 .with_children(|parent| {
                     // Title
@@ -85,39 +86,22 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             },
                         )
                         .with_style(
-                            style().size(Size::new(Val::Px(0.), Val::Px(25.)))
-                            .margin(UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    ..default()
-                            })
+                            style().size(Size::new(Val::Undefined, Val::Px(25.)))
                         )
                     );
                     // List with hidden overflow
                     parent
-                        .spawn(NodeBundle::from_style(style
-                                flex_direction: FlexDirection::Column,
-                                align_self: AlignSelf::Center,
-                                size: Size::new(Val::Percent(100.0), Val::Percent(50.0)),
-                                overflow: Overflow::Hidden,
-                                ..default()
-                            },
-                            background_color: Color::rgb(0.10, 0.10, 0.10).into(),
-                            ..default()
-                        })
+                        .spawn(node()
+                                .column()
+                                .size(Size::new(Val::Percent(100.0), Val::Percent(50.0)))
+                                .hide_overflow()
+                            .background_color(Color::rgb(0.10, 0.10, 0.10))
+                        )
                         .with_children(|parent| {
                             // Moving panel
                             parent
                                 .spawn((
-                                    NodeBundle {
-                                        style: Style {
-                                            flex_direction: FlexDirection::Column,
-                                            flex_grow: 1.0,
-                                            max_size: Size::UNDEFINED,
-                                            ..default()
-                                        },
-                                        ..default()
-                                    },
+                                    node().column().grow(1.0).max_size(Size::UNDEFINED),
                                     ScrollingList::default(),
                                 ))
                                 .with_children(|parent| {
@@ -131,155 +115,105 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                                         .load("fonts/FiraSans-Bold.ttf"),
                                                     font_size: 20.,
                                                     color: Color::WHITE,
-                                                },
+                                                }
                                             )
-                                            .with_style(Style {
-                                                flex_shrink: 0.,
-                                                size: Size::new(Val::Undefined, Val::Px(20.)),
-                                                margin: UiRect {
-                                                    left: Val::Auto,
-                                                    right: Val::Auto,
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            }),
+                                            .shrink(0.)
+                                            .height(Val::Px(20.))
+                                            .margin(UiRect::horizontal(Val::Auto))
                                         );
                                     }
                                 });
                         });
                 });
             parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        size: Size::new(Val::Px(200.0), Val::Px(200.0)),
-                        position_type: PositionType::Absolute,
-                        position: UiRect {
-                            left: Val::Px(210.0),
-                            bottom: Val::Px(10.0),
-                            ..default()
-                        },
-                        border: UiRect::all(Breadth::Px(20.0)),
-                        ..default()
-                    },
-                    background_color: Color::rgb(0.4, 0.4, 1.0).into(),
-                    ..default()
-                })
+                .spawn(
+                node()
+                    .size(Size::new(Val::Px(200.0), Val::Px(200.0)))
+                    .absolute()
+                    .left(Val::Px(210.0))
+                    .bottom(Val::Px(10.0))
+                    .border(NumRect::all(Breadth::Px(20.0)))
+                    .background_color(Color::rgb(0.4, 0.4, 1.0))
+                )
                 .with_children(|parent| {
-                    parent.spawn(NodeBundle {
-                        style: Style {
-                            size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                            ..default()
-                        },
-                        background_color: Color::rgb(0.8, 0.8, 1.0).into(),
-                        ..default()
-                    });
+                    parent.spawn(
+                        node()
+                        .size(Size::new(Val::Percent(100.0), Val::Percent(100.0)))
+                        .background_color(Color::rgb(0.8, 0.8, 1.0))
+                    );
                 });
             // render order test: reddest in the back, whitest in the front (flex center)
             parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                        position_type: PositionType::Absolute,
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        ..default()
-                    },
-                    ..default()
-                })
+                .spawn(
+                    node()
+                    .width(Val::Percent(100.0))
+                    .height(Val::Percent(100.0))
+                    .absolute()
+                    .align_center()
+                    .justify_center()
+                )
                 .with_children(|parent| {
                     parent
-                        .spawn(NodeBundle {
-                            style: Style {
-                                size: Size::new(Val::Px(100.0), Val::Px(100.0)),
-                                ..default()
-                            },
-                            background_color: Color::rgb(1.0, 0.0, 0.0).into(),
-                            ..default()
-                        })
+                        .spawn(node()
+                            .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                            .background_color(Color::rgb(1.0, 0.0, 0.0))
+                        )
                         .with_children(|parent| {
-                            parent.spawn(NodeBundle {
-                                style: Style {
-                                    size: Size::new(Val::Px(100.0), Val::Px(100.0)),
-                                    position_type: PositionType::Absolute,
-                                    position: UiRect {
-                                        left: Val::Px(20.0),
-                                        bottom: Val::Px(20.0),
-                                        ..default()
-                                    },
-                                    ..default()
-                                },
-                                background_color: Color::rgb(1.0, 0.3, 0.3).into(),
-                                ..default()
-                            });
-                            parent.spawn(NodeBundle {
-                                style: Style {
-                                    size: Size::new(Val::Px(100.0), Val::Px(100.0)),
-                                    position_type: PositionType::Absolute,
-                                    position: UiRect {
-                                        left: Val::Px(40.0),
-                                        bottom: Val::Px(40.0),
-                                        ..default()
-                                    },
-                                    ..default()
-                                },
-                                background_color: Color::rgb(1.0, 0.5, 0.5).into(),
-                                ..default()
-                            });
-                            parent.spawn(NodeBundle {
-                                style: Style {
-                                    size: Size::new(Val::Px(100.0), Val::Px(100.0)),
-                                    position_type: PositionType::Absolute,
-                                    position: UiRect {
-                                        left: Val::Px(60.0),
-                                        bottom: Val::Px(60.0),
-                                        ..default()
-                                    },
-                                    ..default()
-                                },
-                                background_color: Color::rgb(1.0, 0.7, 0.7).into(),
-                                ..default()
-                            });
+                            parent.spawn(
+                                node()
+                                .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                .absolute()
+                                .left(Val::Px(20.0))
+                                .bottom(Val::Px(20.0))
+                                .background_color(Color::rgb(1.0, 0.3, 0.3))
+                            );
+                            parent.spawn(
+                                node()
+                                .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                .absolute()
+                                .left(Val::Px(40.0))
+                                .bottom(Val::Px(40.0))
+                                .background_color(Color::rgb(1.0, 0.5, 0.5))
+                            );
+                            parent.spawn(
+                                node()
+                                .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                .absolute()
+                                .left(Val::Px(60.0))
+                                .bottom(Val::Px(60.0))
+                                .background_color(Color::rgb(1.0, 0.7, 0.7))
+                            );
                             // alpha test
-                            parent.spawn(NodeBundle {
-                                style: Style {
-                                    size: Size::new(Val::Px(100.0), Val::Px(100.0)),
-                                    position_type: PositionType::Absolute,
-                                    position: UiRect {
-                                        left: Val::Px(80.0),
-                                        bottom: Val::Px(80.0),
-                                        ..default()
-                                    },
-                                    ..default()
-                                },
-                                background_color: Color::rgba(1.0, 0.9, 0.9, 0.4).into(),
-                                ..default()
-                            });
-                        });
+                            parent.spawn(
+                                node()
+                                .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                .absolute()
+                                .left(Val::Px(80.0))
+                                .bottom(Val::Px(80.0))
+                                .background_color(Color::rgba(1.0, 0.9, 0.9, 0.4))
+                            );
                 });
             // bevy logo (flex center)
             parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                        position_type: PositionType::Absolute,
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::FlexStart,
-                        ..default()
-                    },
-                    ..default()
-                })
+                .spawn(
+                    node()
+                    .size(Size::new(Val::Percent(100.0), Val::Percent(100.0)))
+                    .absolute()
+                    .justify_center()
+                    .align_start()
+                )
                 .with_children(|parent| {
                     // bevy logo (image)
-                    parent.spawn(ImageBundle {
-                        style: Style {
-                            size: Size::new(Val::Px(500.0), Val::Auto),
+                    parent.spawn(
+                        ImageBundle {
+                            image: asset_server.load("branding/bevy_logo_dark_big.png").into(),
                             ..default()
-                        },
-                        image: asset_server.load("branding/bevy_logo_dark_big.png").into(),
-                        ..default()
-                    });
+                        }
+                        .size(Size::new(Val::Px(500.0), Val::Auto))
+                    );
                 });
         });
+    });
 }
 
 #[derive(Component, Default)]
