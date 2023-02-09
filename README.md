@@ -36,7 +36,7 @@ fn spawn_example(
             node()
             .width(Val::Px(150.0))
             .height(Val::Px(100.0))
-            .color(Color::RED)
+            .background_color(Color::RED)
         );
     });
 }
