@@ -45,7 +45,7 @@ fn main() {
 }
 ```
 
-There is a larger example, based on Bevy's UI example in the examples folder.
+There is a larger example based on Bevy's UI example in the examples folder.
 You can run it with:
 
 ```
