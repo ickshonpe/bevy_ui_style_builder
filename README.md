@@ -53,5 +53,5 @@ There is a larger example based on Bevy's UI example in the examples folder.
 You can run it with:
 
 ```
-cargo run --example ui.rs
+cargo run --example ui
 ```
