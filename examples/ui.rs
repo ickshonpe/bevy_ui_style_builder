@@ -28,7 +28,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             node()
                 .width(Val::Percent(100.))
                 .height(Val::Percent(100.))
-                .justify_space_between(),
+                .justify_content_space_between(),
         )
         .with_children(|parent| {
             // left vertical fill (border)
@@ -60,7 +60,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                         color: Color::WHITE,
                                     },
                                 )
-                                .with_style(style().margin(Val::Px(5.))),
+                                .margin(Val::Px(5.)),
                             );
                         });
                 });
@@ -69,8 +69,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .spawn(
                     node()
                         .column()
-                        .justify_center()
-                        .align_center()
+                        .justify_content_center()
+                        .align_items_center()
                         .size(Size::new(Val::Px(200.0), Val::Percent(100.0)))
                         .background_color(Color::rgb(0.15, 0.15, 0.15)),
                 )
@@ -131,7 +131,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         .absolute()
                         .left(Val::Px(210.0))
                         .bottom(Val::Px(10.0))
-                        .border(NumRect::all(Breadth::Px(20.0)))
+                        .border(Breadth::Px(20.0))
                         .background_color(Color::rgb(0.4, 0.4, 1.0)),
                 )
                 .with_children(|parent| {
@@ -148,20 +148,20 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         .width(Val::Percent(100.0))
                         .height(Val::Percent(100.0))
                         .absolute()
-                        .align_center()
-                        .justify_center(),
+                        .align_items_center()
+                        .justify_content_center(),
                 )
                 .with_children(|parent| {
                     parent
                         .spawn(
                             node()
-                                .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                .size_all( Val::Px(100.0))
                                 .background_color(Color::rgb(1.0, 0.0, 0.0)),
                         )
                         .with_children(|parent| {
                             parent.spawn(
                                 node()
-                                    .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                    .size_all(Val::Px(100.0))
                                     .absolute()
                                     .left(Val::Px(20.0))
                                     .bottom(Val::Px(20.0))
@@ -169,15 +169,15 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             );
                             parent.spawn(
                                 node()
-                                    .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                    .size_all( Val::Px(100.0))
                                     .absolute()
                                     .left(Val::Px(40.0))
                                     .bottom(Val::Px(40.0))
-                                    .background_color(Color::rgb(1.0, 0.5, 0.5)),
+                                    .background_color(Color::rgb(1.0, 0.5, 0.5))
                             );
                             parent.spawn(
                                 node()
-                                    .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                    .size_all( Val::Px(100.0))
                                     .absolute()
                                     .left(Val::Px(60.0))
                                     .bottom(Val::Px(60.0))
@@ -186,7 +186,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             // alpha test
                             parent.spawn(
                                 node()
-                                    .size(Size::new(Val::Px(100.0), Val::Px(100.0)))
+                                    .size_all(Val::Px(100.0))
                                     .absolute()
                                     .left(Val::Px(80.0))
                                     .bottom(Val::Px(80.0))
@@ -199,8 +199,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             node()
                                 .size(Size::new(Val::Percent(100.0), Val::Percent(100.0)))
                                 .absolute()
-                                .justify_center()
-                                .align_start(),
+                                .justify_content_center()
+                                .align_items_start(),
                         )
                         .with_children(|parent| {
                             // bevy logo (image)

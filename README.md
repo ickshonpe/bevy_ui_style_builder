@@ -13,7 +13,7 @@ Add the dependency to your project:
 cargo add bevy_ui_style_builder
 ```
 
-Then the following example draws a red square in the middle of the screen:
+Then the following example draws a red rectangle in the middle of the window:
 
 ```rust
 use bevy::prelude::*;
@@ -23,16 +23,14 @@ fn spawn_example(
     mut commands: Commands,
 ) {
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(
-        node()
+    commands.spawn(node()
         .width(Val::Percent(100.0))
         .height(Val::Percent(100.0))
-        .justify_content(JustifyContent::Center)
-        .align_items(AlignItems::Center)
+        .justify_content_center()
+        .align_items_center()
     ).with_children(|builder| {
-        builder.spawn(
-            node()
-            .width(Val::Px(100.0))
+        builder.spawn(node()
+            .width(Val::Px(150.0))
             .height(Val::Px(100.0))
             .color(Color::RED)
         );
