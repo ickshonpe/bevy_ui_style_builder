@@ -1,0 +1,20 @@
+[package]
+name = "bevy_ui_style_builder"
+version = "0.1.0"
+edition = "2021"
+keywords = ["bevy", "ui", "games"]
+categories = ["game-development", "graphics", "gui"]
+repository = "https://github.com/ickshonpe/bevy_ui_style_builder"
+readme = "README.md"
+description = "Bevy UI helper extension traits for setting style properties"
+
+[dependencies.bevy]
+version = "0.9.1"
+default-features = false
+features = ["bevy_ui", "render"]
+
+[dependencies]
+thiserror = "1.0.38"
+
+[dev-dependencies]
+bevy = "0.9.1"
