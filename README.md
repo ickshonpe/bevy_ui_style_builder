@@ -5,6 +5,8 @@
 
 Experimental Bevy UI helper extension methods.
 
+Supports Bevy 0.9
+
 # Usage
 
 Add the dependency to your project:
@@ -23,13 +25,15 @@ fn spawn_example(
     mut commands: Commands,
 ) {
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(node()
+    commands.spawn(
+        node()
         .width(Val::Percent(100.0))
         .height(Val::Percent(100.0))
         .justify_content_center()
         .align_items_center()
     ).with_children(|builder| {
-        builder.spawn(node()
+        builder.spawn(
+            node()
             .width(Val::Px(150.0))
             .height(Val::Px(100.0))
             .color(Color::RED)
